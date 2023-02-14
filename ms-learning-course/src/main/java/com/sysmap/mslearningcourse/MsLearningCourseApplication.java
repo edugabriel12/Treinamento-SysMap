@@ -14,13 +14,4 @@ public class MsLearningCourseApplication {
 		SpringApplication.run(MsLearningCourseApplication.class, args);
 	}
 
-	@Bean
-	CommandLineRunner runner(CourseRepository courseRepository) {
-		return args -> {
-			Course course = new Course("Teoria da Computação");
-
-			courseRepository.insert(course);
-		};
-	}
-
 }

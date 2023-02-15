@@ -5,6 +5,7 @@ import com.sysmap.mslearningcad.mslearningcad.domain.Student;
 import com.sysmap.mslearningcad.mslearningcad.exceptions.StudentException;
 import com.sysmap.mslearningcad.mslearningcad.models.CourseModel;
 import com.sysmap.mslearningcad.mslearningcad.models.CreateStudentInput;
+import com.sysmap.mslearningcad.mslearningcad.models.CreatedStudentEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -14,14 +15,14 @@ import java.util.UUID;
 @Service
 public class StudentService {
 
-    private StudentRepository studentRepository;
+    private final StudentRepository studentRepository;
 
     @Autowired
     public StudentService(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
     }
 
-    public UUID createStudent(CreateStudentInput studentInput) throws StudentException {
+    public Student createStudent(CreateStudentInput studentInput) throws StudentException {
         CourseModel[] courseModels = getCourse(studentInput.getCourseId());
 
         if (courseModels[0] == null) {
@@ -36,8 +37,20 @@ public class StudentService {
                 studentInput.getCourseId()
         );
 
-        return studentRepository.save(student).getStudentId();
+        return studentRepository.save(student);
     }
+
+    public CreatedStudentEvent createStudentEventModel(Student student) {
+       CreatedStudentEvent createdStudentEvent = new CreatedStudentEvent(
+               student.getStudentId(),
+               student.getFirstName(),
+               student.getLastName(),
+               student.getCourseId()
+       );
+
+       return createdStudentEvent;
+    }
+
     public Student getById(UUID studentId) throws StudentException {
         Student fetchedStudent = studentRepository.findCourseByStudentId(studentId).orElseThrow(StudentException::new);
 

@@ -3,10 +3,8 @@ package com.sysmap.mslearningcad.mslearningcad.controllers;
 import com.sysmap.mslearningcad.mslearningcad.domain.Student;
 import com.sysmap.mslearningcad.mslearningcad.errors.StudentError;
 import com.sysmap.mslearningcad.mslearningcad.exceptions.StudentException;
-import com.sysmap.mslearningcad.mslearningcad.models.CourseModel;
-import com.sysmap.mslearningcad.mslearningcad.models.CreateStudentInput;
-import com.sysmap.mslearningcad.mslearningcad.models.CreateStudentResponse;
-import com.sysmap.mslearningcad.mslearningcad.models.CreateStudentResult;
+import com.sysmap.mslearningcad.mslearningcad.models.*;
+import com.sysmap.mslearningcad.mslearningcad.services.EventService;
 import com.sysmap.mslearningcad.mslearningcad.services.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,23 +17,29 @@ import java.util.UUID;
 @RequestMapping("/api/v1/students")
 public class StudentController {
 
-    private StudentService studentService;
+    private final StudentService studentService;
+
+    private final EventService eventService;
 
     @Autowired
-    public StudentController(StudentService studentService) {
+    public StudentController(StudentService studentService, EventService eventService) {
         this.studentService = studentService;
+        this.eventService = eventService;
     }
 
     @PostMapping
     public ResponseEntity<?> createStudent(@RequestBody CreateStudentInput createStudentInput) {
-        UUID createdStudentId;
+        Student createdStudent;
+        CreatedStudentEvent createdStudentEvent;
         try {
-            createdStudentId = studentService.createStudent(createStudentInput);
+            createdStudent = studentService.createStudent(createStudentInput);
+            createdStudentEvent = studentService.createStudentEventModel(createdStudent);
+            eventService.send(createdStudentEvent);
         } catch (StudentException ex) {
             return StudentError.errorCourseNotExists();
         }
 
-        CreateStudentResult result = new CreateStudentResult(createdStudentId);
+        CreateStudentResult result = new CreateStudentResult(createdStudent.getStudentId());
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 

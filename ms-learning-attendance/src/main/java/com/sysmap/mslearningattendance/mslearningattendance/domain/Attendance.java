@@ -19,6 +19,7 @@ public class Attendance {
     @Indexed
     private String id;
     private UUID attendanceId;
+    @Indexed
     private UUID studentId;
     private UUID courseId;
     private Date classDate;
@@ -28,7 +29,7 @@ public class Attendance {
         this.attendanceId = UUID.randomUUID();
         this.studentId = studentId;
         this.courseId = courseId;
-        this.classDate = new Date(TimeZone.getTimeZone("America/Sao_Paulo").toZoneId().toString());
+        this.classDate = new Date();
         this.attendanceStatus = attendanceStatus;
     }
 }

@@ -16,8 +16,8 @@ import java.util.UUID;
 @Builder
 public class Student {
     @Id
-    @Indexed
     private String id;
+    @Indexed
     private UUID studentId;
     private String fullName;
     private UUID courseId;

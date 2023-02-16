@@ -32,7 +32,7 @@ public class EventService {
         );
 
         studentRepository.save(student);
-        logger.info("Mensagem consumida: " + createdStudentEvent);
+        logger.info("Mensagem consumida: " + student);
 
     }
 }
